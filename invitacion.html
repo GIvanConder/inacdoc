@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALERTA DE SEGURIDAD DEL SISTEMA</title>
+  <style>
+    :root{
+      --bg:#050608;
+      --green:#00e676;
+      --cyan:#5fd3ff;
+      --amber:#ffcc00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:radial-gradient(1200px 600px at 50% -10%, #0b1016, var(--bg));
+      color:var(--green);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      overflow:hidden;
+    }
+
+    .noise{position:fixed; inset:0; background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.05"/></svg>'); pointer-events:none; mix-blend-mode:overlay}
+    .scanline{position:fixed; inset:0; background:linear-gradient(transparent 50%, rgba(0,0,0,.25) 50%); background-size:100% 3px; pointer-events:none; opacity:.35}
+
+    .terminal{
+      max-width:900px;
+      margin:8vh auto;
+      padding:26px;
+      border:1px solid var(--green);
+      box-shadow:0 0 40px rgba(0,230,118,.18);
+    }
+
+    .glitch{
+      font-size:clamp(22px,4vw,40px);
+      letter-spacing:.1em;
+      position:relative;
+      margin-bottom:18px;
+    }
+    .glitch::before,.glitch::after{
+      content:attr(data-text);
+      position:absolute;
+      inset:0;
+    }
+    .glitch::before{color:var(--amber); transform:translate(1px,0); clip-path:inset(0 0 65% 0); animation:gl1 2.2s infinite}
+    .glitch::after{color:var(--cyan); transform:translate(-1px,0); clip-path:inset(65% 0 0 0); animation:gl2 1.9s infinite}
+
+    @keyframes gl1{0%{clip-path:inset(0 0 85% 0)}50%{clip-path:inset(35% 0 25% 0)}100%{clip-path:inset(15% 0 55% 0)}}
+    @keyframes gl2{0%{clip-path:inset(65% 0 0 0)}50%{clip-path:inset(15% 0 45% 0)}100%{clip-path:inset(75% 0 15% 0)}}
+
+    .log{line-height:1.65}
+    .type{white-space:pre-wrap}
+
+    .progress{height:12px; border:1px solid var(--green); margin:18px 0}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--green), var(--cyan)); animation:load 6.5s linear forwards}
+    @keyframes load{to{width:100%}}
+
+    .reveal{opacity:0; transform:translateY(8px); animation:reveal 1s ease forwards; animation-delay:6.8s}
+    @keyframes reveal{to{opacity:1; transform:none}}
+
+    .card{border:1px dashed var(--green); padding:18px; margin-top:16px}
+    .btn{display:inline-block; margin-top:14px; padding:10px 16px; border:1px solid var(--green); color:#001; background:var(--green); text-decoration:none}
+    .btn.secondary{background:transparent; color:var(--green)}
+
+    footer{position:fixed; bottom:10px; left:50%; transform:translateX(-50%); opacity:.55; font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="scanline"></div>
+
+  <div class="terminal">
+    <div class="glitch" data-text="ALERTA DE SEGURIDAD">ALERTA DE SEGURIDAD</div>
+
+    <div class="log">
+      <div class="type" id="type"></div>
+      <div class="progress"><div class="bar"></div></div>
+
+      <div class="reveal">
+        <div class="card">
+          <h3>PROTOCOLO DE EVENTO DETECTADO</h3>
+          <p><strong>Clasificación:</strong> Proceso persistente no evitable</p>
+          <p><strong>Descripción:</strong> Invitación formal a comida</p>
+          <p><strong>Fecha:</strong> 15 de febrero</p>
+          <p><strong>Hora:</strong> 4:00 PM</p>
+          <p><strong>Ubicación:</strong> Restaurante Cuerno, Ciudad de México</p>
+
+          <a class="btn" href="https://www.google.com/maps/place/Cuerno+Masaryk/" target="_blank">ABRIR UBICACIÓN</a>
+          <br>
+          <a class="btn secondary" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})">EJECUTAR NUEVO ANÁLISIS</a>
+        </div>
+
+        <p style="margin-top:14px; opacity:.85">La asistencia es altamente recomendada por el sistema.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Invitación digital con estética de seguridad informática. No contiene software malicioso.</footer>
+
+  <script>
+    const text = [
+      '[BOOT] Inicializando entorno seguro...',
+      '[SCAN] Analizando procesos activos...',
+      '[NOTICE] Evento externo detectado.',
+      '[INFO] Parámetros del evento cargados.',
+      '[OK] Notificación completada.'
+    ];
+
+    const el = document.getElementById('type');
+    let i = 0, j = 0;
+
+    function type(){
+      if(i < text.length){
+        if(j <= text[i].length){
+          el.textContent += text[i][j++] || '';
+          setTimeout(type, 32);
+        } else {
+          el.textContent += '\n';
+          i++; j = 0;
+          setTimeout(type, 380);
+        }
+      }
+    }
+
+    type();
+  </script>
+</body>
+</html>
