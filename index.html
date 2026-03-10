@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Snake Fiesta</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
 body{
 margin:0;
@@ -13,7 +13,6 @@ background:#fef5e6;
 color:#333;
 text-align:center;
 }
-
 header{
 padding:20px;
 background:#ffcc66;
@@ -21,31 +20,31 @@ color:#662200;
 font-size:24px;
 font-weight:bold;
 }
-
 canvas{
 background:#fff2e6;
 border:3px solid #ff9933;
 border-radius:10px;
 margin-top:20px;
+width:90vw;
+height:90vw;
+max-width:400px;
+max-height:400px;
 }
-
 #score{
 margin-top:10px;
 font-size:20px;
 }
-
 button{
-padding:12px 20px;
-font-size:18px;
+padding:15px 25px;
+font-size:22px;
 cursor:pointer;
 margin:10px;
 border:none;
-border-radius:5px;
+border-radius:8px;
 background:#ff9933;
 color:white;
 font-weight:bold;
 }
-
 #invite{
 display:none;
 background:#fff2e6;
@@ -60,44 +59,38 @@ justify-content:center;
 align-items:center;
 padding:20px;
 }
-
 #invite h1{
 font-size:36px;
 color:#662200;
 margin-bottom:10px;
 }
-
 #invite p{
 font-size:22px;
 margin:5px;
 }
-
 .arrow-buttons{
 display:flex;
 justify-content:center;
-margin-top:10px;
+flex-wrap:wrap;
+margin-top:15px;
 }
 .arrow-buttons button{
+flex:1 1 45%;
 margin:5px;
 }
 </style>
 </head>
 <body>
-
 <header>🐍 Snake y Carne Asada 🐄</header>
-
 <p>Consigue 10 puntos para ganar o pierdes y ves la invitación 😎</p>
-
-<canvas id="game" width="300" height="300"></canvas>
+<canvas id="game" width="400" height="400"></canvas>
 <h2 id="score">Puntos: 0</h2>
-
 <div class="arrow-buttons">
 <button onclick="move('up')">⬆️</button>
 <button onclick="move('left')">⬅️</button>
 <button onclick="move('down')">⬇️</button>
 <button onclick="move('right')">➡️</button>
 </div>
-
 <div id="invite">
 <h1>🎉 Estás invitado 🎉</h1>
 <p><b>Evento:</b> Carne Asada</p>
@@ -106,7 +99,6 @@ margin:5px;
 <p><b>Lugar:</b> Casa del Geris</p>
 <a href="https://www.google.com/maps/place/Monte+Calvario,+San+Mateo+Cuautepec,+54948+Fuentes+del+Valle,+M%C3%A9x./@19.6220168,-99.1416454,17z/data=!3m1!4b1!4m6!3m5!1s0x85d1f68265d8a611:0xe6b7f6c72f986b35!8m2!3d19.6220168!4d-99.1390705!16s%2Fg%2F11ggsrbbts?entry=ttu&g_ep=EgoyMDI2MDMwNS4wIKXMDSoASAFQAw%3D%3D" target="_blank"><button>Ver ubicación 📍</button></a>
 </div>
-
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -116,25 +108,21 @@ let dx = 20;
 let dy = 0;
 let score = 0;
 let game;
-
 function startGame(){
-snake = [{x:140, y:140}];
+snake = [{x:200, y:200}];
 score = 0;
 dx = 20;
 dy = 0;
 spawnFood();
 clearInterval(game);
-game = setInterval(update, 150);
+game = setInterval(update, 120);
 }
-
 function spawnFood(){
 food = { x: Math.floor(Math.random()*15)*20, y: Math.floor(Math.random()*15)*20 };
 }
-
 function update(){
 const head = {x: snake[0].x+dx, y: snake[0].y+dy};
 snake.unshift(head);
-
 if(head.x === food.x && head.y === food.y){
 score++;
 document.getElementById('score').innerText = 'Puntos: ' + score;
@@ -143,53 +131,42 @@ if(score >= 10){ endGame(); }
 }else{
 snake.pop();
 }
-
-if(head.x<0 || head.y<0 || head.x>=300 || head.y>=300 || collision(head)){
+if(head.x<0 || head.y<0 || head.x>=canvas.width || head.y>=canvas.height || collision(head)){
 endGame();
 }
-
 draw();
 }
-
 function collision(head){
 for(let i=1;i<snake.length;i++){
 if(head.x===snake[i].x && head.y===snake[i].y){ return true; }
 }
 return false;
 }
-
 function draw(){
 ctx.fillStyle='#fff2e6';
-ctx.fillRect(0,0,300,300);
+ctx.fillRect(0,0,canvas.width,canvas.height);
 ctx.fillStyle='#33cc33';
 snake.forEach(s => ctx.fillRect(s.x, s.y, 18, 18));
 ctx.fillStyle='#ff3300';
 ctx.fillRect(food.x, food.y, 18, 18);
 }
-
 function endGame(){
 clearInterval(game);
 document.getElementById('invite').style.display='flex';
 }
-
-// Controles para celular
 function move(dir){
 if(dir==='up' && dy===0){ dx=0; dy=-20; }
 if(dir==='down' && dy===0){ dx=0; dy=20; }
 if(dir==='left' && dx===0){ dx=-20; dy=0; }
 if(dir==='right' && dx===0){ dx=20; dy=0; }
 }
-
-// Controles de teclado
 window.addEventListener('keydown', e => {
 if(e.key==='ArrowUp' && dy===0){ dx=0; dy=-20; }
 if(e.key==='ArrowDown' && dy===0){ dx=0; dy=20; }
 if(e.key==='ArrowLeft' && dx===0){ dx=-20; dy=0; }
 if(e.key==='ArrowRight' && dx===0){ dx=20; dy=0; }
 });
-
 startGame();
 </script>
-
 </body>
 </html>
