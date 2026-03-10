@@ -2,203 +2,193 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Mini Juego Retro</title>
+<title>Snake Fiesta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
-background:#020617;
-color:#e2e8f0;
-font-family:Arial, Helvetica, sans-serif;
+margin:0;
+padding:0;
+font-family:Arial, sans-serif;
+background:#fef5e6;
+color:#333;
 text-align:center;
-padding-top:40px;
+}
+
+header{
+padding:20px;
+background:#ffcc66;
+color:#662200;
+font-size:24px;
+font-weight:bold;
 }
 
 canvas{
-background:#020617;
-border:4px solid #38bdf8;
+background:#fff2e6;
+border:3px solid #ff9933;
+border-radius:10px;
 margin-top:20px;
+}
+
+#score{
+margin-top:10px;
+font-size:20px;
 }
 
 button{
 padding:12px 20px;
 font-size:18px;
 cursor:pointer;
-margin-top:10px;
+margin:10px;
+border:none;
+border-radius:5px;
+background:#ff9933;
+color:white;
+font-weight:bold;
 }
 
-#errorScreen{
+#invite{
 display:none;
+background:#fff2e6;
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:black;
-color:#00ff9c;
-font-family:monospace;
-padding:40px;
-animation:flicker .15s infinite alternate;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
 }
 
-#errorBox{
-background:#020617;
-border:2px solid #00ff9c;
-padding:30px;
-max-width:600px;
-margin:auto;
-margin-top:10%;
+#invite h1{
+font-size:36px;
+color:#662200;
+margin-bottom:10px;
 }
 
-@keyframes flicker{
-from{opacity:.95}
-to{opacity:1}
+#invite p{
+font-size:22px;
+margin:5px;
 }
 
-h1{
-margin-bottom:5px;
+.arrow-buttons{
+display:flex;
+justify-content:center;
+margin-top:10px;
 }
-
+.arrow-buttons button{
+margin:5px;
+}
 </style>
 </head>
 <body>
 
-<h1>🐍 Snake Retro</h1>
-<p>Llega a 8 puntos para ganar.</p>
-<p>Pero cuidado... algo raro puede pasar 👀</p>
+<header>🐍 Snake y Carne Asada 🐄</header>
 
-<button onclick="startGame()">Empezar Juego</button>
+<p>Consigue 10 puntos para ganar o pierdes y ves la invitación 😎</p>
 
-<br>
-<canvas id="game" width="400" height="400"></canvas>
+<canvas id="game" width="300" height="300"></canvas>
+<h2 id="score">Puntos: 0</h2>
 
-<h2 id="score"></h2>
-
-<div id="errorScreen">
-
-<div id="errorBox">
-<h2>SYSTEM ERROR</h2>
-<p>Unexpected system intrusion detected...</p>
-<p>Decrypting hidden message...</p>
-
-<br>
-
-<h1>🎉 INVITACIÓN DETECTADA 🎉</h1>
-
-<p><b>Evento:</b> Cumpleaños</p>
-<p><b>Fecha:</b> 20 de Abril</p>
-<p><b>Hora:</b> 8:00 PM</p>
-<p><b>Lugar:</b> Por definir</p>
-
-<br>
-
-<p>Si estás viendo esto... significa que fuiste seleccionado.</p>
-<p>Ahora estás oficialmente invitado 😈</p>
-
+<div class="arrow-buttons">
+<button onclick="move('up')">⬆️</button>
+<button onclick="move('left')">⬅️</button>
+<button onclick="move('down')">⬇️</button>
+<button onclick="move('right')">➡️</button>
 </div>
 
+<div id="invite">
+<h1>🎉 Estás invitado 🎉</h1>
+<p><b>Evento:</b> Carne Asada</p>
+<p><b>Fecha:</b> 4 de abril del 2026</p>
+<p><b>Hora:</b> 3:00 PM</p>
+<p><b>Lugar:</b> Casa del Geris</p>
+<a href="https://www.google.com/maps/place/Monte+Calvario,+San+Mateo+Cuautepec,+54948+Fuentes+del+Valle,+M%C3%A9x./@19.6220168,-99.1416454,17z/data=!3m1!4b1!4m6!3m5!1s0x85d1f68265d8a611:0xe6b7f6c72f986b35!8m2!3d19.6220168!4d-99.1390705!16s%2Fg%2F11ggsrbbts?entry=ttu&g_ep=EgoyMDI2MDMwNS4wIKXMDSoASAFQAw%3D%3D" target="_blank"><button>Ver ubicación 📍</button></a>
 </div>
 
 <script>
-
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-
-let snake=[];
-let food={};
-let dx=20;
-let dy=0;
-let score=0;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+let snake = [];
+let food = {};
+let dx = 20;
+let dy = 0;
+let score = 0;
 let game;
 
 function startGame(){
-
-snake=[{x:200,y:200}];
-score=0;
-dx=20;
-dy=0;
-
+snake = [{x:140, y:140}];
+score = 0;
+dx = 20;
+dy = 0;
 spawnFood();
-
 clearInterval(game);
-
-game=setInterval(update,120);
-
+game = setInterval(update, 150);
 }
 
 function spawnFood(){
-food={
-x:Math.floor(Math.random()*20)*20,
-y:Math.floor(Math.random()*20)*20
-}
+food = { x: Math.floor(Math.random()*15)*20, y: Math.floor(Math.random()*15)*20 };
 }
 
 function update(){
-
-const head={x:snake[0].x+dx,y:snake[0].y+dy};
-
+const head = {x: snake[0].x+dx, y: snake[0].y+dy};
 snake.unshift(head);
 
-if(head.x===food.x && head.y===food.y){
+if(head.x === food.x && head.y === food.y){
 score++;
-document.getElementById("score").innerText="Puntos: "+score;
+document.getElementById('score').innerText = 'Puntos: ' + score;
 spawnFood();
-
-if(score===4){
-triggerHack();
-return;
-}
-
+if(score >= 10){ endGame(); }
 }else{
 snake.pop();
 }
 
-if(head.x<0 || head.y<0 || head.x>=400 || head.y>=400 || collision(head)){
+if(head.x<0 || head.y<0 || head.x>=300 || head.y>=300 || collision(head)){
 endGame();
 }
 
- draw();
+draw();
 }
 
 function collision(head){
 for(let i=1;i<snake.length;i++){
-if(head.x===snake[i].x && head.y===snake[i].y){
-return true;
-}
+if(head.x===snake[i].x && head.y===snake[i].y){ return true; }
 }
 return false;
 }
 
 function draw(){
-ctx.fillStyle="#020617";
-ctx.fillRect(0,0,400,400);
-
-ctx.fillStyle="#22c55e";
-snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18));
-
-ctx.fillStyle="#ef4444";
-ctx.fillRect(food.x,food.y,18,18);
+ctx.fillStyle='#fff2e6';
+ctx.fillRect(0,0,300,300);
+ctx.fillStyle='#33cc33';
+snake.forEach(s => ctx.fillRect(s.x, s.y, 18, 18));
+ctx.fillStyle='#ff3300';
+ctx.fillRect(food.x, food.y, 18, 18);
 }
 
 function endGame(){
 clearInterval(game);
-document.getElementById("score").innerText="Game Over";
+document.getElementById('invite').style.display='flex';
 }
 
-function triggerHack(){
-clearInterval(game);
-
-canvas.style.display="none";
-document.getElementById("score").innerText="";
-
-document.getElementById("errorScreen").style.display="block";
+// Controles para celular
+function move(dir){
+if(dir==='up' && dy===0){ dx=0; dy=-20; }
+if(dir==='down' && dy===0){ dx=0; dy=20; }
+if(dir==='left' && dx===0){ dx=-20; dy=0; }
+if(dir==='right' && dx===0){ dx=20; dy=0; }
 }
 
-window.addEventListener("keydown",e=>{
-if(e.key==="ArrowUp" && dy===0){dx=0;dy=-20}
-if(e.key==="ArrowDown" && dy===0){dx=0;dy=20}
-if(e.key==="ArrowLeft" && dx===0){dx=-20;dy=0}
-if(e.key==="ArrowRight" && dx===0){dx=20;dy=0}
+// Controles de teclado
+window.addEventListener('keydown', e => {
+if(e.key==='ArrowUp' && dy===0){ dx=0; dy=-20; }
+if(e.key==='ArrowDown' && dy===0){ dx=0; dy=20; }
+if(e.key==='ArrowLeft' && dx===0){ dx=-20; dy=0; }
+if(e.key==='ArrowRight' && dx===0){ dx=20; dy=0; }
 });
 
+startGame();
 </script>
 
 </body>
